@@ -29,8 +29,8 @@ services:
     labels:
     - "caddy.addr=gogs:3000"
     ports:
-    - ${GOGS_SSH_PORT}:22
-    - ${GOGS_HOST_PORT}:3000
+    - 10022:22
+    - 10080:3000
     environment:
     - RUN_CROND=true
     volumes:
@@ -55,7 +55,7 @@ services:
     image: sonarqube:7.1
     container_name: sonarqube
     labels:
-    - "caddy.addr=sonaqube:9000"
+    - "caddy.addr=sonarqube:9000"
     ports:
     - 9000:9000
     - 9092:9092
