@@ -1,50 +1,65 @@
 version: '3.3'
 services:
-    gogsdb:
-      image: mysql:${MYSQL_VERSION}
-      container_name: ${MYSQL_HOST}
-      restart: always
-      env_file:
-          - .env
-      environment:
-          - MYSQL_DATABASE=${MYSQL_DATABASE}
-          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-          - MYSQL_USER=${MYSQL_USER}
-          - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      ports:
-          - 13306:3306
-      volumes:
-          - db-data:/var/lib/mysql
-    gogsapp:
-      image: gogs/gogs
-      restart: always
-      ports:
-        - ${GOGS_SSH_PORT}:22
-        - ${GOGS_HOST_PORT}:3000
-      environment:
-        - RUN_CROND=true
-      volumes:
-        - gogs-data:/data
-      depends_on:
-        - gogsdb
-    jenkinsapp:
-      image: jenkinsci/blueocean
-      user: root
-      restart: always
-      ports:
-        - 8080:8080
-      volumes:
-          - jenkins-data:/var/jenkings_home
-          - /var/run/docker.sock:/var/run/docker.sock
-          - "$HOME":/home
-      depends_on:
-        - gogsdb
+  caddy-docker:
+    image: nathanosman/caddy-docker
+    container_name: caddy-docker
+    environment:
+    - ACME_EMAIL=[redacted]
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /data/caddy-docker:/var/lib/caddy-docker
+
+  gogsdb2:
+    image: mysql:${MYSQL_VERSION}
+    container_name: ${MYSQL_HOST}
+    restart: always
+    env_file:
+    - .env
+    environment:
+    - MYSQL_DATABASE=${MYSQL_DATABASE}
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    - MYSQL_USER=${MYSQL_USER}
+    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+    - 13306:3306
+    volumes:
+    - db-data:/var/lib/mysql
+  gogsapp2:
+    image: gogs/gogs
+    restart: always
+    container_name: gogs
+    labels:
+    - "caddy.addr=gogs:3000"
+    ports:
+    - ${GOGS_SSH_PORT}:22
+    - ${GOGS_HOST_PORT}:3000
+    environment:
+    - RUN_CROND=true
+    volumes:
+    - gogs-data:/data
+    depends_on:
+    - gogsdb2
+  jenkinsapp:
+    image: jenkinsci/blueocean
+    container_name: jenkins
+    labels:
+    - "caddy.addr=jenkins:8080"
+    user: root
+    restart: always
+    ports:
+    - 8080:8080
+    volumes:
+    - jenkins-data:/var/jenkings_home
+    - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+    - gogsdb2
 volumes:
   gogs-data:
     driver: local
   db-data:
     driver: local
   jenkins-data:
-    driver: local
-  /var/run/docker.sock:
     driver: local
