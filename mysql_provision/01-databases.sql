@@ -10,4 +10,4 @@ GRANT ALL ON gogs.* TO 'dev'@'%';
 
 flush privileges;
 CREATE USER 'sonar'@'%' IDENTIFIED BY 'sonar';
-GRANT ALL ON sonar.* TO 'sonar'@'%';
+GRANT ALL ON sonarqube.* TO 'sonar'@'%';
