@@ -12,7 +12,7 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     - /data/caddy-docker:/var/lib/caddy-docker
   gogsdb2:
-    image: mysql:8.0.12
+    image: mysql:5.7
     container_name: mysqldb
     restart: always
     ports:
