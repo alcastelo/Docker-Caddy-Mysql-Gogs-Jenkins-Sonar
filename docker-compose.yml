@@ -13,10 +13,8 @@ services:
     - /data/caddy-docker:/var/lib/caddy-docker
   gogsdb2:
     image: mysql:8.0.12
-    container_name: ${MYSQL_HOST}
+    container_name: mysqldb
     restart: always
-    env_file:
-    - .env
     ports:
     - 13306:3306
     volumes:
