@@ -11,22 +11,17 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - /data/caddy-docker:/var/lib/caddy-docker
-
   gogsdb2:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:8.0.12
     container_name: ${MYSQL_HOST}
     restart: always
     env_file:
     - .env
-    environment:
-    - MYSQL_DATABASE=${MYSQL_DATABASE}
-    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    - MYSQL_USER=${MYSQL_USER}
-    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
     - 13306:3306
     volumes:
     - db-data:/var/lib/mysql
+    - ./mysql_provision:/docker-entrypoint-initdb.d
   gogsapp2:
     image: gogs/gogs
     restart: always
@@ -56,6 +51,18 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
     - gogsdb2
+  sonarqube:
+    image: sonarqube:7.1
+    container_name: sonarqube
+    labels:
+    - "caddy.addr=sonaqube:9000"
+    ports:
+    - 9000:9000
+    - 9092:9092
+    environment:
+    - SONARQUBE_JDBC_USERNAME=sonar
+    - SONARQUBE_JDBC_PASSWORD=sonar
+    - SONARQUBE_JDBC_URL=jdbc:mysql://gogsdb2:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
 volumes:
   gogs-data:
     driver: local
