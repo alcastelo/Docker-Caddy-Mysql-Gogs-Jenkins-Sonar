@@ -62,7 +62,7 @@ services:
     environment:
     - SONARQUBE_JDBC_USERNAME=sonar
     - SONARQUBE_JDBC_PASSWORD=sonar
-    - SONARQUBE_JDBC_URL=jdbc:mysql://gogsdb2:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
+    - SONARQUBE_JDBC_URL=jdbc:mysql://mysqldb:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
     depends_on:
     - gogsdb2
 volumes:
